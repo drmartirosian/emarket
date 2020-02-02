@@ -1,26 +1,33 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { Component } from 'react';
+import Navbar from'./components/container/Navbar/Navbar';
+import routes from './routes';
+import { withRouter } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { login, logout } from './redux/reducer';
+import axios from 'axios';
 import './App.css';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+class App extends Component {
+  componentDidMount() {
+    axios.get('/api/user-data')
+    .then(res => {
+      const { dispatch } = this.props;
+      if(res.data.user) {
+        dispatch(login(res.data.user));
+      } else {
+        dispatch(logout());
+      }
+    })
+  }
+  render() {
+    return (
+      <div className="App">
+        <Navbar />
+        {routes}
+      </div>
+    );
+  }
 }
 
-export default App;
+//connect to reducer.
+export default withRouter(connect()(App));
